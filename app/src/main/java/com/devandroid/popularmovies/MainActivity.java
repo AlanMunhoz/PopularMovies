@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,12 +55,18 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
         apiKey = this.getResources().getString(R.string.MovieDBApiKey);
 
         mListMovies = findViewById(R.id.rv_list_movies);
-        LinearLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        LinearLayoutManager layoutManager = new GridLayoutManager(this, getNCardColumns(this));
         mListMovies.setLayoutManager(layoutManager);
         mListMovies.setHasFixedSize(true);
 
         makeMTDBSearchQuery(searchMostPopular);
 
+    }
+
+    int getNCardColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int nColumns = (displayMetrics.widthPixels / 250);
+        return nColumns;
     }
 
     @Override
@@ -69,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
         Class destinyActivity = DetailsActivity.class;
         Intent intent = new Intent(context, destinyActivity);
         intent.putExtra(Intent.EXTRA_TEXT, moviesRequest.getItem(clickedItemIndex).mStrBackdropPath);
+        intent.putExtra("TITLE", moviesRequest.getItem(clickedItemIndex).mStrTitle);
+        intent.putExtra("POSTER_PATH", moviesRequest.getItem(clickedItemIndex).mStrPosterPath);
+        intent.putExtra("OVERVIEW", moviesRequest.getItem(clickedItemIndex).mStrOverview);
+        intent.putExtra("VOTE_AVERAGE", moviesRequest.getItem(clickedItemIndex).mStrVoteAverage);
+        intent.putExtra("RELEASE_DATE", moviesRequest.getItem(clickedItemIndex).mStrReleaseDate);
         startActivity(intent);
     }
 
