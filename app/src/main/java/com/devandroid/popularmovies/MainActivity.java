@@ -81,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
         intent.putExtra("OVERVIEW", moviesRequest.getItem(clickedItemIndex).mStrOverview);
         intent.putExtra("VOTE_AVERAGE", moviesRequest.getItem(clickedItemIndex).mStrVoteAverage);
         intent.putExtra("RELEASE_DATE", moviesRequest.getItem(clickedItemIndex).mStrReleaseDate);
+        intent.putExtra("VOTE_COUNT", moviesRequest.getItem(clickedItemIndex).mStrVoteCount);
+        intent.putExtra("POPULARITY", moviesRequest.getItem(clickedItemIndex).mStrPopularity);
         startActivity(intent);
     }
 

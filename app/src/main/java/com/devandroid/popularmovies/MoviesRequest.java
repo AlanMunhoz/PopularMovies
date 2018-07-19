@@ -56,12 +56,27 @@ public class MoviesRequest {
         JSONArray movieResults = requestJSon.getJSONArray(MOVIES_LIST);
         mMovies = new ArrayList<>();
 
+        mStrPage = requestJSon.getString("page");
+        mStrTotalResuts = requestJSon.getString("total_results");
+        mStrTotalPages = requestJSon.getString("total_pages");
+
         for (int i = 0; i < movieResults.length(); i++) {
+
             JSONObject movieJSon = movieResults.getJSONObject(i);
             Movie movie = new Movie();
+
+            movie.mStrVoteCount = movieJSon.getString("vote_count");
+            movie.mStrId = movieJSon.getString("id");
+            movie.mStrVoteAverage = movieJSon.getString("vote_average");
             movie.mStrTitle = movieJSon.getString("title");
+            movie.mStrPopularity = movieJSon.getString("popularity");
             movie.mStrPosterPath = movieJSon.getString("poster_path");
+            movie.mStrOriginalLanguage = movieJSon.getString("original_language");
+            movie.mStrOriginalTitle = movieJSon.getString("original_title");
             movie.mStrBackdropPath = movieJSon.getString("backdrop_path");
+            movie.mStrOverview = movieJSon.getString("overview");
+            movie.mStrReleaseDate = movieJSon.getString("release_date");
+
             mMovies.add(movie);
         }
     }
