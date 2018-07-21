@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -24,7 +23,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         void onListItemClick(int clickedItemIndex);
     }
 
-    public ListAdapter(ListItemClickListener listener) {
+    ListAdapter(ListItemClickListener listener) {
         mOnClickListener = listener;
     }
 
@@ -61,7 +60,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         ImageView ivFigure;
         TextView tvTitle;
 
-        public ListViewHolder(View itemView) {
+        ListViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 
