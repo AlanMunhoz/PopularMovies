@@ -1,7 +1,17 @@
 <resources>
-    <string name="app_name">PopularMovies</string>
 
-    <string name="most_popular">most popular</string>
-    <string name="top_rated">top rated</string>
+    <string name="app_name">Popular Movies Stage 1</string>
+
+    <string name="most_popular_menu">most popular</string>
+    <string name="top_rated_menu">top rated</string>
+
+    <string name="vote_average_title">vote average</string>
+    <string name="release_date_title">release date</string>
+    <string name="vote_count_title">vote count</string>
+    <string name="popularity_title">popularity</string>
+    <string name="overview_title">Overview</string>
+    <string name="poster_movie_content_desc">movie poster</string>
+
+    <string name="no_connection">Please check your internet connectivity and try again!</string>
 
 </resources>

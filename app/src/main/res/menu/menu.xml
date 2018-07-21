@@ -6,11 +6,12 @@
         android:id="@+id/most_popular"
         android:orderInCategory="1"
         app:showAsAction="collapseActionView"
-        android:title="@string/most_popular"/>
+        android:title="@string/most_popular_menu"/>
 
     <item
         android:id="@+id/top_rated"
         android:orderInCategory="2"
         app:showAsAction="collapseActionView"
-        android:title="@string/top_rated"/>
+        android:title="@string/top_rated_menu"/>
+
 </menu>

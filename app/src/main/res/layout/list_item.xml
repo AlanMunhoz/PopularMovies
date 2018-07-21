@@ -23,6 +23,7 @@
             android:id="@+id/iv_figure"
             android:layout_width="match_parent"
             android:layout_height="250dp"
+            android:contentDescription="@string/poster_movie_content_desc"
             android:scaleType="centerCrop" />
 
         <TextView

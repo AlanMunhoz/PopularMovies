@@ -8,7 +8,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/tvTitle"
@@ -19,7 +19,6 @@
             android:layout_marginTop="24dp"
             android:background="@color/colorPrimaryDark"
             android:gravity="center"
-            android:text="Title"
             android:textColor="@color/cardview_light_background"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +31,7 @@
             android:layout_height="250dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="30dp"
+            android:contentDescription="@string/poster_movie_content_desc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
@@ -42,7 +42,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="50dp"
-            android:text="TextView"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -50,12 +49,12 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/tvVoteAverageTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="vote average"
+            android:text="@string/vote_average_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvVoteAverage" />
@@ -67,7 +66,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:text="TextView"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,12 +73,12 @@
             app:layout_constraintTop_toBottomOf="@+id/tvVoteAverage" />
 
         <TextView
-            android:id="@+id/textView7"
+            android:id="@+id/tvReleaseDateTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="release date"
+            android:text="@string/release_date_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvReleaseDate" />
@@ -92,7 +90,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:text="TextView"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -100,12 +97,12 @@
             app:layout_constraintTop_toBottomOf="@+id/tvReleaseDate" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/tvVoteCountTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="vote count"
+            android:text="@string/vote_count_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvVoteCount" />
@@ -117,7 +114,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:text="TextView"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,27 +121,15 @@
             app:layout_constraintTop_toBottomOf="@+id/tvVoteCount" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/tvPopularityTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:text="popularity"
+            android:text="@string/popularity_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvPopularity" />
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="30dp"
-            android:text="Overview"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivPosterPath" />
 
         <TextView
             android:id="@+id/tvOverview"
@@ -155,13 +139,24 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
             android:textAlignment="inherit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            app:layout_constraintTop_toBottomOf="@+id/tvOverviewTitle" />
+
+        <TextView
+            android:id="@+id/tvOverviewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/overview_title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivPosterPath" />
 
     </android.support.constraint.ConstraintLayout>
 

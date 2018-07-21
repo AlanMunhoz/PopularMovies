@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
+
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
 
     <array name="clBackground"><item>#2D5073</item><item>#040721</item></array>
+
 </resources>

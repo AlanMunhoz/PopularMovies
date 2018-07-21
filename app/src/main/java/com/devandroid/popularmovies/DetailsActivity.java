@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -32,10 +31,7 @@ public class DetailsActivity extends AppCompatActivity {
         tvPopularity = findViewById(R.id.tvPopularity);
 
         Intent intent = getIntent();
-        if(intent.hasExtra(Intent.EXTRA_TEXT)) {
-            String strMovieId = intent.getStringExtra(Intent.EXTRA_TEXT);
 
-        }
         if(intent.hasExtra("TITLE")) {
             tvTitle.setText(intent.getStringExtra("TITLE"));
         }
@@ -58,6 +54,5 @@ public class DetailsActivity extends AppCompatActivity {
         if(intent.hasExtra("POPULARITY")) {
             tvPopularity.setText(intent.getStringExtra("POPULARITY"));
         }
-
     }
 }

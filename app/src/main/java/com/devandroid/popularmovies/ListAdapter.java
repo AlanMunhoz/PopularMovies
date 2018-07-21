@@ -16,18 +16,21 @@ import java.util.ArrayList;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
 
-    final private ListItemClickListener mOnClickListener;
-    final private ArrayList<ListItem> mListItems;
+    private ListItemClickListener mOnClickListener;
+    private ArrayList<ListItem> mListItems;
     private Context mContext;
 
     public interface ListItemClickListener {
         void onListItemClick(int clickedItemIndex);
     }
 
-    public ListAdapter(ArrayList<ListItem> listItems, ListItemClickListener listener) {
-
-        mListItems = listItems;
+    public ListAdapter(ListItemClickListener listener) {
         mOnClickListener = listener;
+    }
+
+    public void setListAdapter(ArrayList<ListItem> listItems) {
+        mListItems = listItems;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -48,6 +51,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     @Override
     public int getItemCount() {
+        if(mListItems==null)
+            return 0;
         return mListItems.size();
     }
 
