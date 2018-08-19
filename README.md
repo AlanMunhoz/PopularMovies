@@ -1,4 +1,4 @@
-# PopularMovies_stage1
+# PopularMovies
 This is a simple app that presents to user a grid of movies.
 
 #### Built with
