@@ -3,8 +3,11 @@ package com.devandroid.popularmovies;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.devandroid.popularmovies.Model.Movie;
 import com.squareup.picasso.Picasso;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -32,6 +35,25 @@ public class DetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        if(intent.hasExtra("Movie")) {
+            Bundle data = intent.getExtras();
+            Movie movie = null;
+            if(data != null) {
+                movie = data.getParcelable("Movie");
+            }
+            if(movie != null){
+                tvTitle.setText(movie.getmStrTitle());
+                String strMovieId = movie.getmStrPosterPath();
+                Picasso.with(this).load("https://image.tmdb.org/t/p/" + "/w780/" + strMovieId).into(ivPosterPath);
+                tvOverview.setText(movie.getmStrOverview());
+                tvVoteAverage.setText(movie.getmStrVoteAverage());
+                tvReleaseDate.setText(movie.getmStrReleaseDate());
+                tvVoteCount.setText(movie.getmStrVoteCount());
+                tvPopularity.setText(movie.getmStrPopularity());
+            }
+        }
+
+        /*
         if(intent.hasExtra("TITLE")) {
             tvTitle.setText(intent.getStringExtra("TITLE"));
         }
@@ -54,5 +76,8 @@ public class DetailsActivity extends AppCompatActivity {
         if(intent.hasExtra("POPULARITY")) {
             tvPopularity.setText(intent.getStringExtra("POPULARITY"));
         }
+        */
+
+
     }
 }

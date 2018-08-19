@@ -17,6 +17,9 @@ public final class Network {
     public static final String IMAGE_URL = "https://image.tmdb.org/t/p/";
     public static String API_KEY;
 
+    public static String VIDEOS_URL(String id) { return BASE_URL + "movie/"+id+"/videos"; }
+    public static String REVIEWS_URL(String id) { return BASE_URL + "movie/"+id+"/reviews"; }
+
     /**
      * Stores the user api key
      * @param strKey

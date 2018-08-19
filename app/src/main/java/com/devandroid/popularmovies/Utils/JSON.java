@@ -25,7 +25,7 @@ public final class JSON {
     private static final String ORIG_LANGUAGE = "original_language";
     private static final String ORIG_TITLE = "original_title";
     private static final String LIST_IDS = "genre_ids";
-    private static final String BACKFROP_PATH = "backdrop_path";
+    private static final String BACKDROP_PATH = "backdrop_path";
     private static final String ADULT = "adult";
     private static final String OVERVIEW = "overview";
     private static final String RELEASE_DATE = "release_date";
@@ -70,22 +70,21 @@ public final class JSON {
         for (int i = 0; i < movieResults.length(); i++) {
 
             JSONObject movieJSon = movieResults.getJSONObject(i);
-            Movie movie = new Movie();
-
-            movie.setmStrVoteCount(movieJSon.getString(VOTE_COUNT));
-            movie.setmStrId(movieJSon.getString(ID));
-            movie.setmStrVideo(movieJSon.getString(VIDEO));
-            movie.setmStrVoteAverage(movieJSon.getString(VOTE_AVERAGE));
-            movie.setmStrTitle(movieJSon.getString(TITLE));
-            movie.setmStrPopularity(movieJSon.getString(POPULARITY));
-            movie.setmStrPosterPath(movieJSon.getString(POSTER_PATH));
-            movie.setmStrOriginalLanguage(movieJSon.getString(ORIG_LANGUAGE));
-            movie.setmStrOriginalTitle(movieJSon.getString(ORIG_TITLE));
-            movie.setmStrBackdropPath(movieJSon.getString(BACKFROP_PATH));
-            movie.setmStrAdult(movieJSon.getString(ADULT));
-            movie.setmStrOverview(movieJSon.getString(OVERVIEW));
-            movie.setmStrReleaseDate(movieJSon.getString(RELEASE_DATE));
-
+            Movie movie = new Movie(
+                    movieJSon.getString(ID),
+                    movieJSon.getString(TITLE),
+                    movieJSon.getString(POSTER_PATH),
+                    movieJSon.getString(OVERVIEW),
+                    movieJSon.getString(VOTE_AVERAGE),
+                    movieJSon.getString(RELEASE_DATE),
+                    movieJSon.getString(VOTE_COUNT),
+                    movieJSon.getString(POPULARITY),
+                    movieJSon.getString(VIDEO),
+                    movieJSon.getString(ORIG_LANGUAGE),
+                    movieJSon.getString(ORIG_TITLE),
+                    movieJSon.getString(BACKDROP_PATH),
+                    movieJSon.getString(ADULT)
+            );
             mMovies.add(movie);
         }
         moviesRequest.setmMovies(mMovies);

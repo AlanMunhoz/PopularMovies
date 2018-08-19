@@ -4,6 +4,7 @@
 
     <string name="most_popular_menu">most popular</string>
     <string name="top_rated_menu">top rated</string>
+    <string name="favorite_menu">favorites</string>
 
     <string name="vote_average_title">vote average</string>
     <string name="release_date_title">release date</string>

@@ -1,6 +1,9 @@
 package com.devandroid.popularmovies.Model;
 
-public class Movie {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Movie implements Parcelable {
 
     private String mStrVoteCount;
     private String mStrId;
@@ -16,6 +19,90 @@ public class Movie {
     private String mStrAdult;
     private String mStrOverview;
     private String mStrReleaseDate;
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    public Movie(Parcel in) {
+
+        mStrId = in.readString();
+        mStrTitle = in.readString();
+        mStrPosterPath = in.readString();
+        mStrOverview = in.readString();
+        mStrVoteAverage = in.readString();
+        mStrReleaseDate = in.readString();
+        mStrVoteCount = in.readString();
+        mStrPopularity = in.readString();
+        mStrVideo = in.readString();
+        mStrOriginalLanguage = in.readString();
+        mStrOriginalTitle = in.readString();
+        mStrBackdropPath = in.readString();
+        mStrAdult = in.readString();
+    }
+
+    public Movie(
+            String strId,
+            String strTitle,
+            String strPosterPath,
+            String strOverview,
+            String strVoteAverage,
+            String strReleaseDate,
+            String strVoteCount,
+            String strPopularity,
+            String strVideo,
+            String strOriginalLanguage,
+            String strOriginalTitle,
+            String strBackdropPath,
+            String strAdult
+            ) {
+
+        mStrId = strId;
+        mStrTitle = strTitle;
+        mStrPosterPath = strPosterPath;
+        mStrOverview = strOverview;
+        mStrVoteAverage = strVoteAverage;
+        mStrReleaseDate = strReleaseDate;
+        mStrVoteCount = strVoteCount;
+        mStrPopularity = strPopularity;
+        mStrVideo = strVideo;
+        mStrOriginalLanguage = strOriginalLanguage;
+        mStrOriginalTitle = strOriginalTitle;
+        mStrBackdropPath = strBackdropPath;
+        mStrAdult = strAdult;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+        parcel.writeString(mStrId);
+        parcel.writeString(mStrTitle);
+        parcel.writeString(mStrPosterPath);
+        parcel.writeString(mStrOverview);
+        parcel.writeString(mStrVoteAverage);
+        parcel.writeString(mStrReleaseDate);
+        parcel.writeString(mStrVoteCount);
+        parcel.writeString(mStrPopularity);
+        parcel.writeString(mStrVideo);
+        parcel.writeString(mStrOriginalLanguage);
+        parcel.writeString(mStrOriginalTitle);
+        parcel.writeString(mStrBackdropPath);
+        parcel.writeString(mStrAdult);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
 
     public String getmStrVoteCount() { return mStrVoteCount; }
     public void setmStrVoteCount(String mStrVoteCount) { this.mStrVoteCount = mStrVoteCount; }
@@ -45,4 +132,5 @@ public class Movie {
     public void setmStrOverview(String mStrOverview) { this.mStrOverview = mStrOverview; }
     public String getmStrReleaseDate() { return mStrReleaseDate; }
     public void setmStrReleaseDate(String mStrReleaseDate) { this.mStrReleaseDate = mStrReleaseDate; }
+
 }

@@ -26,7 +26,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+
+
 public class MainActivity extends AppCompatActivity implements ListAdapter.ListItemClickListener {
+
+    private static final int CEL_WIDTH = 250;
 
     private FrameLayout mFlParentView;
     private RecyclerView mRvListMovies;
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
 
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +75,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
         Context context = MainActivity.this;
         Class destinyActivity = DetailsActivity.class;
         Intent intent = new Intent(context, destinyActivity);
-        intent.putExtra("TITLE", moviesRequest.getItem(clickedItemIndex).getmStrTitle());
-        intent.putExtra("POSTER_PATH", moviesRequest.getItem(clickedItemIndex).getmStrPosterPath());
-        intent.putExtra("OVERVIEW", moviesRequest.getItem(clickedItemIndex).getmStrOverview());
-        intent.putExtra("VOTE_AVERAGE", moviesRequest.getItem(clickedItemIndex).getmStrVoteAverage());
-        intent.putExtra("RELEASE_DATE", moviesRequest.getItem(clickedItemIndex).getmStrReleaseDate());
-        intent.putExtra("VOTE_COUNT", moviesRequest.getItem(clickedItemIndex).getmStrVoteCount());
-        intent.putExtra("POPULARITY", moviesRequest.getItem(clickedItemIndex).getmStrPopularity());
+        intent.putExtra("Movie", moviesRequest.getItem(clickedItemIndex));
         startActivity(intent);
     }
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
      */
     private int getNCardColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int nColumns = (displayMetrics.widthPixels / 250);
+        int nColumns = (displayMetrics.widthPixels / CEL_WIDTH);
         return nColumns;
     }
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
     private void makeTMDBSearchQuery(String search) {
 
         URL tmdbSearchUrl = Network.buildUrl(search);
-        Log.d("myLog", tmdbSearchUrl.toString());
+        Log.d(LOG_TAG, tmdbSearchUrl.toString());
         new TMDBQueryTask().execute(tmdbSearchUrl);
     }
 
@@ -152,11 +152,11 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
             mPbProgressbar.setVisibility(View.INVISIBLE);
 
             if(movieResults!=null) {
-                Log.d("myLog", movieResults);
+                Log.d(LOG_TAG, movieResults);
                 displayErrorMessage(false);
                 showMovieList(movieResults);
             } else {
-                Log.d("myLog", "Load data errors");
+                Log.d(LOG_TAG, "Load data errors");
                 displayErrorMessage(true);
             }
         }

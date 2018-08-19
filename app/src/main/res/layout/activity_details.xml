@@ -37,23 +37,14 @@
 
         <TextView
             android:id="@+id/tvVoteAverage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="50dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextViewDetailsScreen2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
         <TextView
             android:id="@+id/tvVoteAverageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            style="@style/TextViewDetailsScreen1"
             android:text="@string/vote_average_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
@@ -61,23 +52,14 @@
 
         <TextView
             android:id="@+id/tvReleaseDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="40dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextViewDetailsScreen2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvVoteAverage" />
 
         <TextView
             android:id="@+id/tvReleaseDateTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            style="@style/TextViewDetailsScreen1"
             android:text="@string/release_date_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
@@ -85,23 +67,14 @@
 
         <TextView
             android:id="@+id/tvVoteCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="40dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextViewDetailsScreen2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvReleaseDate" />
 
         <TextView
             android:id="@+id/tvVoteCountTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            style="@style/TextViewDetailsScreen1"
             android:text="@string/vote_count_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
@@ -109,23 +82,14 @@
 
         <TextView
             android:id="@+id/tvPopularity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="40dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            style="@style/TextViewDetailsScreen2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvVoteCount" />
 
         <TextView
             android:id="@+id/tvPopularityTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            style="@style/TextViewDetailsScreen1"
             android:text="@string/popularity_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
