@@ -3,6 +3,7 @@ package com.devandroid.popularmovies;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +25,8 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ivPosterPath = findViewById(R.id.ivPosterPath);
         tvTitle = findViewById(R.id.tvTitle);
@@ -52,5 +55,15 @@ public class DetailsActivity extends AppCompatActivity {
                 tvPopularity.setText(movie.getmStrPopularity());
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
