@@ -3,11 +3,11 @@ package com.devandroid.popularmovies;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.devandroid.popularmovies.Model.Movie;
+import com.devandroid.popularmovies.Utils.Network;
 import com.squareup.picasso.Picasso;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -35,16 +35,16 @@ public class DetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if(intent.hasExtra("Movie")) {
+        if(intent.hasExtra(MainActivity.BUNDLE_DETAILS_EXTRA)) {
             Bundle data = intent.getExtras();
             Movie movie = null;
             if(data != null) {
-                movie = data.getParcelable("Movie");
+                movie = data.getParcelable(MainActivity.BUNDLE_DETAILS_EXTRA);
             }
             if(movie != null){
                 tvTitle.setText(movie.getmStrTitle());
                 String strMovieId = movie.getmStrPosterPath();
-                Picasso.with(this).load("https://image.tmdb.org/t/p/" + "/w780/" + strMovieId).into(ivPosterPath);
+                Picasso.with(this).load(Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_780PX + strMovieId).into(ivPosterPath);
                 tvOverview.setText(movie.getmStrOverview());
                 tvVoteAverage.setText(movie.getmStrVoteAverage());
                 tvReleaseDate.setText(movie.getmStrReleaseDate());
@@ -52,32 +52,5 @@ public class DetailsActivity extends AppCompatActivity {
                 tvPopularity.setText(movie.getmStrPopularity());
             }
         }
-
-        /*
-        if(intent.hasExtra("TITLE")) {
-            tvTitle.setText(intent.getStringExtra("TITLE"));
-        }
-        if(intent.hasExtra("POSTER_PATH")) {
-            String strMovieId = intent.getStringExtra("POSTER_PATH");
-            Picasso.with(this).load("https://image.tmdb.org/t/p/" + "/w780/" + strMovieId).into(ivPosterPath);
-        }
-        if(intent.hasExtra("OVERVIEW")) {
-            tvOverview.setText(intent.getStringExtra("OVERVIEW"));
-        }
-        if(intent.hasExtra("VOTE_AVERAGE")) {
-            tvVoteAverage.setText(intent.getStringExtra("VOTE_AVERAGE"));
-        }
-        if(intent.hasExtra("RELEASE_DATE")) {
-            tvReleaseDate.setText(intent.getStringExtra("RELEASE_DATE"));
-        }
-        if(intent.hasExtra("VOTE_COUNT")) {
-            tvVoteCount.setText(intent.getStringExtra("VOTE_COUNT"));
-        }
-        if(intent.hasExtra("POPULARITY")) {
-            tvPopularity.setText(intent.getStringExtra("POPULARITY"));
-        }
-        */
-
-
     }
 }

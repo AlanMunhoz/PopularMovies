@@ -1,6 +1,7 @@
 package com.devandroid.popularmovies.Utils;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,8 @@ public final class Network {
     public static final String MOST_POPULAR_SEARCH = "movie/popular?api_key=";
     public static final String TOP_RATED_SEARCH = "movie/top_rated?api_key=";
     public static final String IMAGE_URL = "https://image.tmdb.org/t/p/";
+    public static final String IMAGE_POSTER_SIZE_185PX = "/w185/";
+    public static final String IMAGE_POSTER_SIZE_780PX = "/w780/";
     public static String API_KEY;
 
     public static String VIDEOS_URL(String id) { return BASE_URL + "movie/"+id+"/videos"; }

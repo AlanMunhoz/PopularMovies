@@ -1,9 +1,10 @@
 package com.devandroid.popularmovies;
 
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.graphics.drawable.GradientDrawable;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,14 +22,13 @@ import android.widget.TextView;
 import com.devandroid.popularmovies.Model.MoviesRequest;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
+import com.devandroid.popularmovies.Utils.NetworkLoader;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 
 
-public class MainActivity extends AppCompatActivity implements ListAdapter.ListItemClickListener {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, ListAdapter.ListItemClickListener {
 
     private static final int CEL_WIDTH = 250;
 
@@ -40,7 +40,11 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
 
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
+    private String mSearchUrl;
 
+    private static final int MAIN_ACTIVITY_LOADER = 1;
+    private static final String SEARCH_QUERY_URL_EXTRA = "SearchUrl";
+    public static final String BUNDLE_DETAILS_EXTRA = "Movies";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -64,19 +68,22 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
 
         Network.setApiKey(this.getResources().getString(R.string.TheMovieDB_ApiKey));
 
-        if (mAdapter.getItemCount() == 0) {
-            makeTMDBSearchQuery(Network.MOST_POPULAR_SEARCH);
+        /**
+         * Restore the search string if exists and call request movies
+         */
+        if (savedInstanceState != null) {
+            mSearchUrl = savedInstanceState.getString(SEARCH_QUERY_URL_EXTRA);
+        } else {
+            mSearchUrl = Network.MOST_POPULAR_SEARCH;
         }
+        makeTMDBSearchQuery(mSearchUrl);
     }
 
     @Override
-    public void onListItemClick(int clickedItemIndex) {
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        Context context = MainActivity.this;
-        Class destinyActivity = DetailsActivity.class;
-        Intent intent = new Intent(context, destinyActivity);
-        intent.putExtra("Movie", moviesRequest.getItem(clickedItemIndex));
-        startActivity(intent);
+        outState.putString(SEARCH_QUERY_URL_EXTRA, mSearchUrl);
     }
 
     @Override
@@ -101,6 +108,48 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+
+        Context context = MainActivity.this;
+        Class destinyActivity = DetailsActivity.class;
+        Intent intent = new Intent(context, destinyActivity);
+        intent.putExtra(BUNDLE_DETAILS_EXTRA, moviesRequest.getItem(clickedItemIndex));
+        startActivity(intent);
+    }
+
+    @Override
+    public Loader<String> onCreateLoader(int i, Bundle bundle) {
+
+        Log.d(LOG_TAG, "onCreateLoader");
+
+        String searchUrl = bundle.getString(MainActivity.SEARCH_QUERY_URL_EXTRA);
+        NetworkLoader loader = new NetworkLoader(this, Network.buildUrl(searchUrl));
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String movieResults) {
+
+        /**
+         * Hide indicator of loading data
+         */
+        mPbProgressbar.setVisibility(View.INVISIBLE);
+
+        if(movieResults!=null) {
+            Log.d(LOG_TAG, movieResults);
+            displayErrorMessage(false);
+            showMovieList(movieResults);
+        } else {
+            Log.d(LOG_TAG, "Load data errors");
+            displayErrorMessage(true);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+    }
+
     /**
      * calculate and define how many columns will be present in recycler view
      */
@@ -122,44 +171,21 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
 
     private void makeTMDBSearchQuery(String search) {
 
-        URL tmdbSearchUrl = Network.buildUrl(search);
-        Log.d(LOG_TAG, tmdbSearchUrl.toString());
-        new TMDBQueryTask().execute(tmdbSearchUrl);
-    }
+        mSearchUrl = search;
+        Bundle bundle = new Bundle();
+        bundle.putString(SEARCH_QUERY_URL_EXTRA, mSearchUrl);
 
-    private class TMDBQueryTask extends AsyncTask<URL, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mPbProgressbar.setVisibility(View.VISIBLE);
+        NetworkLoader loader = (NetworkLoader) getLoaderManager().getLoader(MAIN_ACTIVITY_LOADER);
+        if(loader!=null && loader.isAlreadyCreated()) {
+            getLoaderManager().restartLoader(MAIN_ACTIVITY_LOADER, bundle, this).forceLoad();
+        } else {
+            getLoaderManager().initLoader(MAIN_ACTIVITY_LOADER, bundle, this).forceLoad();
         }
 
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String SearchResults = null;
-            try {
-                SearchResults = Network.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return SearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String movieResults) {
-            mPbProgressbar.setVisibility(View.INVISIBLE);
-
-            if(movieResults!=null) {
-                Log.d(LOG_TAG, movieResults);
-                displayErrorMessage(false);
-                showMovieList(movieResults);
-            } else {
-                Log.d(LOG_TAG, "Load data errors");
-                displayErrorMessage(true);
-            }
-        }
+        /**
+         * Show indicator of loading data
+         */
+        mPbProgressbar.setVisibility(View.VISIBLE);
     }
 
     private void showMovieList(String movieResults) {
@@ -168,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.ListI
             moviesRequest = JSON.getModelFromJSON(movieResults);
             listMovies = new ArrayList<>();
             for(int i=0; i<moviesRequest.getSize(); i++) {
-                listMovies.add(new ListItem(moviesRequest.getItem(i).getmStrTitle(), Network.IMAGE_URL + "/w185/" + moviesRequest.getItem(i).getmStrPosterPath()));
+                listMovies.add(new ListItem(moviesRequest.getItem(i).getmStrTitle(), Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + moviesRequest.getItem(i).getmStrPosterPath()));
             }
             mAdapter.setListAdapter(listMovies);
         } catch (Exception e) {
