@@ -60,6 +60,7 @@ public final class Network {
      * @throws IOException State of request reading
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
+
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
@@ -77,4 +78,5 @@ public final class Network {
             urlConnection.disconnect();
         }
     }
+
 }

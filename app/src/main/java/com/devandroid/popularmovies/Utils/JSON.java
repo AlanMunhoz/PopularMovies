@@ -4,6 +4,7 @@ import com.devandroid.popularmovies.Model.Movie;
 import com.devandroid.popularmovies.Model.MoviesRequest;
 import com.devandroid.popularmovies.Model.Review;
 import com.devandroid.popularmovies.Model.ReviewsRequest;
+import com.devandroid.popularmovies.Model.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +37,14 @@ public final class JSON {
     private static final String AUTHOR = "author";
     private static final String CONTENT = "content";
     private static final String URL = "url";
+
+    private static final String ISO_639 = "iso_639_1";
+    private static final String ISO_3166 = "iso_3166_1";
+    private static final String KEY = "key";
+    private static final String NAME = "name";
+    private static final String SITE = "site";
+    private static final String SIZE = "size";
+    private static final String TYPE = "type";
 
     /**
      * Parses JSON from web response to MovieRequest object
@@ -150,4 +159,55 @@ public final class JSON {
 
         return reviewsRequest;
     }
+
+    /**
+     * Parses JSON from web response to getVideosFromJSON object
+     * [This code is based on Udacity Nanodegree classes]
+     *
+     * @param JSonString JSON string from server
+     * @return getVideosFromJSON object
+     * @throws JSONException if JSON data can't be parsed
+     */
+    public static ArrayList<Video> getVideosFromJSON(String JSonString) throws JSONException {
+
+        JSONObject requestJSon = new JSONObject(JSonString);
+
+        if (requestJSon.has(MESSAGE_CODE)) {
+            int errorCode = requestJSon.getInt(MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    /* Server sent valid data */
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    /* URL wrong, skip method */
+                    return null;
+                default:
+                    /* Server didn't respond, skip method */
+                    return null;
+            }
+        }
+
+        JSONArray lstVideos = requestJSon.getJSONArray(LIST_RESULTS);
+        ArrayList<Video> mVideos;
+        mVideos = new ArrayList<>();
+
+        for (int i = 0; i < lstVideos.length(); i++) {
+
+            JSONObject videosJSon = lstVideos.getJSONObject(i);
+            Video video = new Video(
+                    videosJSon.getString(ID),
+                    videosJSon.getString(ISO_639),
+                    videosJSon.getString(ISO_3166),
+                    videosJSon.getString(KEY),
+                    videosJSon.getString(NAME),
+                    videosJSon.getString(SITE),
+                    videosJSon.getString(SIZE),
+                    videosJSon.getString(TYPE)
+            );
+            mVideos.add(video);
+        }
+        return mVideos;
+    }
+
 }

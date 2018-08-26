@@ -27,10 +27,10 @@
 
         <ImageView
             android:id="@+id/ivPosterPath"
-            android:layout_width="185dp"
+            android:layout_width="200dp"
             android:layout_height="250dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="24dp"
             android:contentDescription="@string/poster_movie_content_desc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
@@ -95,12 +95,24 @@
             app:layout_constraintStart_toEndOf="@+id/ivPosterPath"
             app:layout_constraintTop_toBottomOf="@+id/tvPopularity" />
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvVideos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOverview" />
+
         <TextView
             android:id="@+id/tvOverviewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="24dp"
             android:text="@string/overview_title"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -125,12 +137,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
             android:text="@string/reviews_title"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvOverview" />
+            app:layout_constraintTop_toBottomOf="@+id/rvVideos" />
 
         <TextView
             android:id="@+id/tvReviews"

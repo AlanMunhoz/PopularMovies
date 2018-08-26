@@ -19,6 +19,7 @@ public class Movie implements Parcelable {
     private String mStrAdult;
     private String mStrOverview;
     private String mStrReleaseDate;
+    private String mStrFullPosterPathUrl;
 
     public static final Parcelable.Creator<Movie> CREATOR
             = new Parcelable.Creator<Movie>() {
@@ -132,5 +133,6 @@ public class Movie implements Parcelable {
     public void setmStrOverview(String mStrOverview) { this.mStrOverview = mStrOverview; }
     public String getmStrReleaseDate() { return mStrReleaseDate; }
     public void setmStrReleaseDate(String mStrReleaseDate) { this.mStrReleaseDate = mStrReleaseDate; }
-
+    public String getmStrFullPosterPathUrl() { return mStrFullPosterPathUrl; }
+    public void setmStrFullPosterPathUrl(String mStrFullPosterPathUrl) { this.mStrFullPosterPathUrl = mStrFullPosterPathUrl; }
 }

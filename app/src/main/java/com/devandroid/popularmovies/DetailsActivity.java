@@ -1,10 +1,13 @@
 package com.devandroid.popularmovies;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -12,13 +15,16 @@ import android.widget.TextView;
 
 import com.devandroid.popularmovies.Model.Movie;
 import com.devandroid.popularmovies.Model.ReviewsRequest;
+import com.devandroid.popularmovies.Model.Video;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.Utils.NetworkLoader;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
+
+public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, VideoAdapter.ListItemClickListener {
 
     private static final String SEARCH_QUERY_URL_EXTRA = "SearchUrl";
     private static final int DETAILS_ACTIVITY_LOADER = 2;
@@ -32,7 +38,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private TextView tvVoteCount;
     private TextView tvPopularity;
     private TextView tvReviews;
+    private RecyclerView mRvVideos;
 
+    private VideoAdapter mAdapter;
+    private Movie mMovie;
     private String mSearchUrl;
 
     @Override
@@ -50,16 +59,27 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         tvVoteCount = findViewById(R.id.tvVoteCount);
         tvPopularity = findViewById(R.id.tvPopularity);
         tvReviews = findViewById(R.id.tvReviews);
+        mRvVideos = findViewById(R.id.rvVideos);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mRvVideos.setLayoutManager(layoutManager);
+        mRvVideos.setHasFixedSize(true);
+
+        mAdapter = new VideoAdapter(DetailsActivity.this);
+        mRvVideos.setAdapter(mAdapter);
+
 
         Intent intent = getIntent();
-
         if(intent.hasExtra(MainActivity.BUNDLE_DETAILS_EXTRA)) {
             Bundle data = intent.getExtras();
             Movie movie = null;
             if(data != null) {
                 movie = data.getParcelable(MainActivity.BUNDLE_DETAILS_EXTRA);
             }
-            if(movie != null){
+            if(movie != null) {
+
+                mMovie = movie;
+
                 tvTitle.setText(movie.getmStrTitle());
                 String strMovieId = movie.getmStrPosterPath();
                 Picasso.with(this).load(Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_780PX + strMovieId).into(ivPosterPath);
@@ -69,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 tvVoteCount.setText(movie.getmStrVoteCount());
                 tvPopularity.setText(movie.getmStrPopularity());
 
-                makeTMDBSearchQuery(Network.REVIEWS_URL(movie.getmStrId()));
+                networkRequest(Network.REVIEWS_URL(movie.getmStrId()));
             }
         }
     }
@@ -85,6 +105,18 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
+    public void onListItemClick(int clickedItemIndex) {
+
+        /*
+        Context context = MainActivity.this;
+        Class destinyActivity = DetailsActivity.class;
+        Intent intent = new Intent(context, destinyActivity);
+        intent.putExtra(BUNDLE_DETAILS_EXTRA, moviesRequest.getItem(clickedItemIndex));
+        startActivity(intent);
+        */
+    }
+
+    @Override
     public Loader<String> onCreateLoader(int i, Bundle bundle) {
 
         String searchUrl = bundle.getString(SEARCH_QUERY_URL_EXTRA);
@@ -95,21 +127,26 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<String> loader, String movieResults) {
 
-
         if(movieResults!=null) {
-            showReviewsList(movieResults);
+
+            Log.d(LOG_TAG, movieResults);
+
+            if(mSearchUrl.equals(Network.REVIEWS_URL(mMovie.getmStrId()))) {
+                showReviewsList(movieResults);
+                networkRequest(Network.VIDEOS_URL(mMovie.getmStrId()));
+            } else {
+                showVideosList(movieResults);
+            }
         } else {
             Log.d(LOG_TAG, "Load data errors");
-            //displayErrorMessage(true);
         }
-
     }
 
     @Override
     public void onLoaderReset(Loader<String> loader) {
     }
 
-    private void makeTMDBSearchQuery(String search) {
+    private void networkRequest(String search) {
 
         mSearchUrl = search;
         Bundle bundle = new Bundle();
@@ -143,4 +180,23 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             e.printStackTrace();
         }
     }
+
+    private void showVideosList(String videoResults) {
+
+        try {
+
+            ArrayList<Video> lstVideos = JSON.getVideosFromJSON(videoResults);
+
+            if(lstVideos!=null) {
+                mRvVideos.setVisibility(RecyclerView.VISIBLE);
+                mAdapter.setListAdapter(lstVideos);
+            } else {
+                mRvVideos.setVisibility(RecyclerView.GONE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

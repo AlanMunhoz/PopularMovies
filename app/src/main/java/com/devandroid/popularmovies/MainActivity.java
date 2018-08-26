@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else {
             mSearchUrl = Network.MOST_POPULAR_SEARCH;
         }
-        makeTMDBSearchQuery(mSearchUrl);
+        networkRequest(mSearchUrl);
     }
 
     @Override
@@ -98,11 +98,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         switch (itemThatWasClickedId) {
 
             case R.id.most_popular :
-                makeTMDBSearchQuery(Network.MOST_POPULAR_SEARCH);
+                networkRequest(Network.MOST_POPULAR_SEARCH);
                 return true;
 
             case R.id.top_rated :
-                makeTMDBSearchQuery(Network.TOP_RATED_SEARCH);
+                networkRequest(Network.TOP_RATED_SEARCH);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private void makeTMDBSearchQuery(String search) {
+    private void networkRequest(String search) {
 
         mSearchUrl = search;
         Bundle bundle = new Bundle();
@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             moviesRequest = JSON.getMoviesFromJSON(movieResults);
             listMovies = new ArrayList<>();
             for(int i=0; i<moviesRequest.getSize(); i++) {
+                //moviesRequest.getItem(i).setmStrFullPosterPathUrl(Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + moviesRequest.getItem(i).getmStrPosterPath());
                 listMovies.add(new ListItem(moviesRequest.getItem(i).getmStrTitle(), Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + moviesRequest.getItem(i).getmStrPosterPath()));
             }
             mAdapter.setListAdapter(listMovies);
