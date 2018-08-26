@@ -31,6 +31,11 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, ListAdapter.ListItemClickListener {
 
     private static final int CEL_WIDTH = 250;
+    private static final int MAIN_ACTIVITY_LOADER = 1;
+    private static final String SEARCH_QUERY_URL_EXTRA = "SearchUrl";
+    public static final String BUNDLE_DETAILS_EXTRA = "Movies";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
 
     private FrameLayout mFlParentView;
     private RecyclerView mRvListMovies;
@@ -41,11 +46,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
     private String mSearchUrl;
-
-    private static final int MAIN_ACTIVITY_LOADER = 1;
-    private static final String SEARCH_QUERY_URL_EXTRA = "SearchUrl";
-    public static final String BUNDLE_DETAILS_EXTRA = "Movies";
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Log.d(LOG_TAG, "onCreateLoader");
 
-        String searchUrl = bundle.getString(MainActivity.SEARCH_QUERY_URL_EXTRA);
+        String searchUrl = bundle.getString(SEARCH_QUERY_URL_EXTRA);
         NetworkLoader loader = new NetworkLoader(this, Network.buildUrl(searchUrl));
         return loader;
     }
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private void showMovieList(String movieResults) {
 
         try {
-            moviesRequest = JSON.getModelFromJSON(movieResults);
+            moviesRequest = JSON.getMoviesFromJSON(movieResults);
             listMovies = new ArrayList<>();
             for(int i=0; i<moviesRequest.getSize(); i++) {
                 listMovies.add(new ListItem(moviesRequest.getItem(i).getmStrTitle(), Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + moviesRequest.getItem(i).getmStrPosterPath()));

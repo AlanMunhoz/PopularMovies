@@ -2,6 +2,9 @@ package com.devandroid.popularmovies.Utils;
 
 import com.devandroid.popularmovies.Model.Movie;
 import com.devandroid.popularmovies.Model.MoviesRequest;
+import com.devandroid.popularmovies.Model.Review;
+import com.devandroid.popularmovies.Model.ReviewsRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +33,10 @@ public final class JSON {
     private static final String OVERVIEW = "overview";
     private static final String RELEASE_DATE = "release_date";
 
+    private static final String AUTHOR = "author";
+    private static final String CONTENT = "content";
+    private static final String URL = "url";
+
     /**
      * Parses JSON from web response to MovieRequest object
      * [This code is based on Udacity Nanodegree classes]
@@ -38,7 +45,7 @@ public final class JSON {
      * @return MovieRequest object
      * @throws JSONException if JSON data can't be parsed
      */
-    public static MoviesRequest getModelFromJSON(String JSonString) throws JSONException {
+    public static MoviesRequest getMoviesFromJSON(String JSonString) throws JSONException {
 
         JSONObject requestJSon = new JSONObject(JSonString);
         MoviesRequest moviesRequest = new MoviesRequest();
@@ -90,5 +97,57 @@ public final class JSON {
         moviesRequest.setmMovies(mMovies);
 
         return moviesRequest;
+    }
+
+    /**
+     * Parses JSON from web response to getReviewsFromJSON object
+     * [This code is based on Udacity Nanodegree classes]
+     *
+     * @param JSonString JSON string from server
+     * @return ReviewsRequest object
+     * @throws JSONException if JSON data can't be parsed
+     */
+    public static ReviewsRequest getReviewsFromJSON(String JSonString) throws JSONException {
+
+        JSONObject requestJSon = new JSONObject(JSonString);
+        ReviewsRequest reviewsRequest = new ReviewsRequest();
+
+        if (requestJSon.has(MESSAGE_CODE)) {
+            int errorCode = requestJSon.getInt(MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    /* Server sent valid data */
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    /* URL wrong, skip method */
+                    return null;
+                default:
+                    /* Server didn't respond, skip method */
+                    return null;
+            }
+        }
+
+        JSONArray reviewsResults = requestJSon.getJSONArray(LIST_RESULTS);
+        ArrayList<Review> mReviews;
+        mReviews = new ArrayList<>();
+
+        reviewsRequest.setmId(requestJSon.getString(ID));
+        reviewsRequest.setmPages(requestJSon.getString(PAGE));
+
+        for (int i = 0; i < reviewsResults.length(); i++) {
+
+            JSONObject movieJSon = reviewsResults.getJSONObject(i);
+            Review review = new Review(
+                    movieJSon.getString(AUTHOR),
+                    movieJSon.getString(CONTENT),
+                    movieJSon.getString(ID),
+                    movieJSon.getString(URL)
+            );
+            mReviews.add(review);
+        }
+        reviewsRequest.setReviews(mReviews);
+
+        return reviewsRequest;
     }
 }

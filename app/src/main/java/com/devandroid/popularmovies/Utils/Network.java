@@ -20,8 +20,8 @@ public final class Network {
     public static final String IMAGE_POSTER_SIZE_780PX = "/w780/";
     public static String API_KEY;
 
-    public static String VIDEOS_URL(String id) { return BASE_URL + "movie/"+id+"/videos"; }
-    public static String REVIEWS_URL(String id) { return BASE_URL + "movie/"+id+"/reviews"; }
+    public static String VIDEOS_URL(String id) { return "movie/"+id+"/videos?api_key="; }
+    public static String REVIEWS_URL(String id) { return "movie/"+id+"/reviews?api_key="; }
 
     /**
      * Stores the user api key

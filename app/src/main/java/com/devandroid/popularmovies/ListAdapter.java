@@ -58,19 +58,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView ivFigure;
-        TextView tvTitle;
 
         ListViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
 
             ivFigure = itemView.findViewById(R.id.iv_figure);
-            tvTitle = itemView.findViewById(R.id.tv_title);
         }
 
         void bind(int listIndex) {
             Picasso.with(mContext).load(mListItems.get(listIndex).getFigure()).into(ivFigure);
-            tvTitle.setText(mListItems.get(listIndex).getTitle());
         }
 
         @Override

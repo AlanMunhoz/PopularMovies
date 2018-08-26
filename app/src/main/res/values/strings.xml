@@ -11,8 +11,10 @@
     <string name="vote_count_title">vote count</string>
     <string name="popularity_title">popularity</string>
     <string name="overview_title">Overview</string>
+    <string name="reviews_title">Reviews</string>
     <string name="poster_movie_content_desc">movie poster</string>
 
     <string name="no_connection">Please check your internet connectivity and try again!</string>
+    <string name="no_reviews">No reviews for this movie!</string>
 
 </resources>
