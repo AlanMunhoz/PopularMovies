@@ -4,14 +4,17 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.devandroid.popularmovies.Model.Movie;
 import com.devandroid.popularmovies.Model.ReviewsRequest;
@@ -42,6 +45,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     private VideoAdapter mAdapter;
     private Movie mMovie;
+    private ArrayList<Video> mLstVideos;
     private String mSearchUrl;
 
     @Override
@@ -50,6 +54,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_details);
 
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         ivPosterPath = findViewById(R.id.ivPosterPath);
         tvTitle = findViewById(R.id.tvTitle);
@@ -95,25 +100,36 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.details_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            onBackPressed();
-        }
+        switch(id) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
 
+            case R.id.favorite:
+                item.setIcon(R.drawable.baseline_favorite_white_24);
+                Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
 
-        /*
-        Context context = MainActivity.this;
-        Class destinyActivity = DetailsActivity.class;
-        Intent intent = new Intent(context, destinyActivity);
-        intent.putExtra(BUNDLE_DETAILS_EXTRA, moviesRequest.getItem(clickedItemIndex));
-        startActivity(intent);
-        */
+        String videoUrl = mLstVideos.get(clickedItemIndex).getYoutubeUrl();
+        Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl));
+        Intent chooser = Intent.createChooser(target, "Open With");
+        if (chooser.resolveActivity(getPackageManager()) != null) {
+            startActivity(chooser);
+        }
     }
 
     @Override
@@ -185,11 +201,11 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         try {
 
-            ArrayList<Video> lstVideos = JSON.getVideosFromJSON(videoResults);
+            mLstVideos = JSON.getVideosFromJSON(videoResults);
 
-            if(lstVideos!=null) {
+            if(mLstVideos!=null) {
                 mRvVideos.setVisibility(RecyclerView.VISIBLE);
-                mAdapter.setListAdapter(lstVideos);
+                mAdapter.setListAdapter(mLstVideos);
             } else {
                 mRvVideos.setVisibility(RecyclerView.GONE);
             }

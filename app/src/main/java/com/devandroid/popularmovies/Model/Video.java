@@ -34,6 +34,10 @@ public class Video {
         mType = strType;
     }
 
+    public String getName() {
+        return mName;
+    }
+
     public String getYoutubeUrl() {
 
         if(mSite.equals("YouTube")) {

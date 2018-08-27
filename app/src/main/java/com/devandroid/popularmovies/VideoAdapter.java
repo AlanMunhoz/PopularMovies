@@ -70,7 +70,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         }
 
         void bind(int listIndex) {
-            tvName.setText(mVideo.get(listIndex).getYoutubeUrl());
+            tvName.setText(mVideo.get(listIndex).getName()/* + "\n" + mVideo.get(listIndex).getYoutubeUrl()*/);
             //Picasso.with(mContext).load("http://i3.ytimg.com/vi/PbRmbhdHDDM/hqdefault.jpg").into(ivFigure);
         }
 
