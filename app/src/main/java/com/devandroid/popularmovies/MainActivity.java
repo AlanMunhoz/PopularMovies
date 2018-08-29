@@ -23,9 +23,11 @@ import com.devandroid.popularmovies.Model.MoviesRequest;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.Utils.NetworkLoader;
+import com.devandroid.popularmovies.database.AppDatabase;
+import com.devandroid.popularmovies.database.FavoriteEntry;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, ListAdapter.ListItemClickListener {
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private TextView mTvNoConnection;
     private ListAdapter mAdapter;
 
+    private AppDatabase mDb;
+
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
     private String mSearchUrl;
@@ -56,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mRvListMovies = findViewById(R.id.rv_list_movies);
         mPbProgressbar = findViewById(R.id.pbProgressbar);
         mTvNoConnection = findViewById(R.id.tvNoConnection);
+
+        mDb = AppDatabase.getSinstance(getApplicationContext());
 
         mFlParentView.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, getResources().getIntArray(R.array.clBackground)));
 
@@ -97,12 +103,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int itemThatWasClickedId = item.getItemId();
         switch (itemThatWasClickedId) {
 
-            case R.id.most_popular :
+            case R.id.most_popular:
                 networkRequest(Network.MOST_POPULAR_SEARCH);
                 return true;
 
-            case R.id.top_rated :
+            case R.id.top_rated:
                 networkRequest(Network.TOP_RATED_SEARCH);
+                return true;
+
+            case R.id.favorite:
+                List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
+                listMovies = new ArrayList<>();
+                for(int i=0;i<favoriteEntries.size();i++) {
+                    listMovies.add(new ListItem(
+                            favoriteEntries.get(i).getTitle(),
+                            Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
+                }
+                mAdapter.setListAdapter(listMovies);
+
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -23,9 +23,12 @@ import com.devandroid.popularmovies.Model.Video;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.Utils.NetworkLoader;
+import com.devandroid.popularmovies.database.AppDatabase;
+import com.devandroid.popularmovies.database.FavoriteEntry;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, VideoAdapter.ListItemClickListener {
@@ -49,6 +52,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private ArrayList<Video> mLstVideos;
     private String mSearchUrl;
 
+    private AppDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +73,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         tvPopularity = findViewById(R.id.tvPopularity);
         tvReviews = findViewById(R.id.tvReviews);
         mRvVideos = findViewById(R.id.rvVideos);
+
+        mDb = AppDatabase.getSinstance(getApplicationContext());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRvVideos.setLayoutManager(layoutManager);
@@ -105,6 +112,12 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.details_menu, menu);
+
+        List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
+        if(favoriteEntries.size()>0) {
+            menu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_white_24);
+        }
+
         return true;
     }
 
@@ -117,8 +130,19 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 break;
 
             case R.id.favorite:
-                item.setIcon(R.drawable.baseline_favorite_white_24);
-                Toast.makeText(this, "favorite", Toast.LENGTH_SHORT).show();
+
+                List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
+                if(favoriteEntries.size()>0) {
+                    item.setIcon(R.drawable.baseline_favorite_border_white_24);
+                    mDb.FavoriteDAO().deleteFavorite(favoriteEntries.get(0));
+                    Toast.makeText(this, "Not favorite :(", Toast.LENGTH_SHORT).show();
+                } else {
+                    item.setIcon(R.drawable.baseline_favorite_white_24);
+                    FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getmStrTitle(), mMovie.getmStrPosterPath(), mMovie.getmStrId());
+                    mDb.FavoriteDAO().insertFavorite(favoriteEntry);
+                    Toast.makeText(this, "Favorite ;)", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
         return super.onOptionsItemSelected(item);
