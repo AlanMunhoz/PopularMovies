@@ -14,7 +14,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "favoriteMovies";
     private static AppDatabase sInstance;
 
-    public static AppDatabase getSinstance(Context context) {
+    public static AppDatabase getInstance(Context context) {
 
         if(sInstance==null) {
             synchronized (LOCK) {
@@ -22,7 +22,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class,
                         AppDatabase.DATABASE_NAME)
-                        .allowMainThreadQueries()
+                        //.allowMainThreadQueries()
                         .build();
             }
         }

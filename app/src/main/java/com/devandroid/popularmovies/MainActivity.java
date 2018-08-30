@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.devandroid.popularmovies.Model.MoviesRequest;
+import com.devandroid.popularmovies.Utils.AppExecutors;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.Utils.NetworkLoader;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mPbProgressbar = findViewById(R.id.pbProgressbar);
         mTvNoConnection = findViewById(R.id.tvNoConnection);
 
-        mDb = AppDatabase.getSinstance(getApplicationContext());
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         mFlParentView.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, getResources().getIntArray(R.array.clBackground)));
 
@@ -112,15 +113,24 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return true;
 
             case R.id.favorite:
-                List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
-                listMovies = new ArrayList<>();
-                for(int i=0;i<favoriteEntries.size();i++) {
-                    listMovies.add(new ListItem(
-                            favoriteEntries.get(i).getTitle(),
-                            Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
-                }
-                mAdapter.setListAdapter(listMovies);
-
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
+                        listMovies = new ArrayList<>();
+                        for(int i=0;i<favoriteEntries.size();i++) {
+                            listMovies.add(new ListItem(
+                                    favoriteEntries.get(i).getTitle(),
+                                    Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAdapter.setListAdapter(listMovies);
+                            }
+                        });
+                    }
+                });
                 return true;
         }
         return super.onOptionsItemSelected(item);
