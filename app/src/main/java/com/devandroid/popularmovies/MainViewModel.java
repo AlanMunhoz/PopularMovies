@@ -13,12 +13,14 @@ import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
 
+    public static final String LOG_TAG = MainViewModel.class.getSimpleName();
+
     private LiveData<List<FavoriteEntry>> favoriteEntries;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
 
-        Log.d("02092018", "loadFavorites from DB");
+        Log.d(LOG_TAG, "loadFavorites from DB");
         AppDatabase database = AppDatabase.getInstance(this.getApplication());
         favoriteEntries = database.FavoriteDAO().loadFavorites();
     }

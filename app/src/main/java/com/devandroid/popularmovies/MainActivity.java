@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
 
-                Log.d("02092018", "onChanged DB");
+                Log.d(MainViewModel.LOG_TAG, "onChanged DB");
                 favoriteListMovies = new ArrayList<>();
                 for(int i=0;i<favoriteEntries.size();i++) {
                     favoriteListMovies.add(new ListItem(
