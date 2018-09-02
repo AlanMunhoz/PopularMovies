@@ -1,5 +1,6 @@
 package com.devandroid.popularmovies.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -13,10 +14,10 @@ import java.util.List;
 public interface FavoriteDAO {
 
     @Query("SELECT * FROM Favorite")
-    List<FavoriteEntry> loadFavorites();
+    LiveData<List<FavoriteEntry>> loadFavorites();
 
-    @Query("SELECT * FROM Favorite WHERE movieId LIKE :movieId")
-    List<FavoriteEntry> searchTitle(String movieId);
+    @Query("SELECT * FROM Favorite WHERE movieId = :movieId")
+    LiveData<List<FavoriteEntry>> searchTitle(String movieId);
 
     @Insert
     void insertFavorite(FavoriteEntry favoriteEntry);

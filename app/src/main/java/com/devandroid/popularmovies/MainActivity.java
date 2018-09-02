@@ -1,10 +1,13 @@
 package com.devandroid.popularmovies;
 
 import android.app.LoaderManager;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
+    ArrayList<ListItem> favoriteListMovies;
     private String mSearchUrl;
 
     @Override
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             mSearchUrl = Network.MOST_POPULAR_SEARCH;
         }
         networkRequest(mSearchUrl);
+
+        addLiveDataObserver();
     }
 
     @Override
@@ -113,24 +119,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return true;
 
             case R.id.favorite:
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
-                        listMovies = new ArrayList<>();
-                        for(int i=0;i<favoriteEntries.size();i++) {
-                            listMovies.add(new ListItem(
-                                    favoriteEntries.get(i).getTitle(),
-                                    Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mAdapter.setListAdapter(listMovies);
-                            }
-                        });
-                    }
-                });
+                mAdapter.setListAdapter(favoriteListMovies);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -231,4 +220,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    /**
+     * Adding observer to database, this way allow us to know when database changes occurs.
+     */
+    private void addLiveDataObserver() {
+
+        //LiveData will run by default outside of the mainThread
+        LiveData<List<FavoriteEntry>> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
+        favoriteEntries.observe(this, new Observer<List<FavoriteEntry>>() {
+            //onChanged runs on the main thread by default
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+
+                favoriteListMovies = new ArrayList<>();
+                for(int i=0;i<favoriteEntries.size();i++) {
+                    favoriteListMovies.add(new ListItem(
+                            favoriteEntries.get(i).getTitle(),
+                            Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
+                }
+            }
+        });
+    }
 }

@@ -1,10 +1,13 @@
 package com.devandroid.popularmovies;
 
 import android.app.LoaderManager;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,6 +55,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private Movie mMovie;
     private ArrayList<Video> mLstVideos;
     private String mSearchUrl;
+    private FavoriteEntry mFavoriteEntry;
+    private Menu mFavoriteMenu;
 
     private AppDatabase mDb;
 
@@ -108,27 +113,20 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 networkRequest(Network.REVIEWS_URL(movie.getmStrId()));
             }
         }
+
+        addLiveDataObserver();
     }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.details_menu, menu);
 
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
-                if(favoriteEntries.size()>0) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            menu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_white_24);
-                        }
-                    });
-                }
-            }
-        });
-
+        mFavoriteMenu = menu;
+        if(mFavoriteEntry!=null) {
+            menu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_white_24);
+        } else {
+            menu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_border_white_24);
+        }
         return true;
     }
 
@@ -141,35 +139,22 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 break;
 
             case R.id.favorite:
-
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        final List<FavoriteEntry> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
-                        if(favoriteEntries.size()>0) {
-                            mDb.FavoriteDAO().deleteFavorite(favoriteEntries.get(0));
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    item.setIcon(R.drawable.baseline_favorite_border_white_24);
-                                    //Toast.makeText(this, "Not favorite :(", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } else {
-                            FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getmStrTitle(), mMovie.getmStrPosterPath(), mMovie.getmStrId());
-                            mDb.FavoriteDAO().insertFavorite(favoriteEntry);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    item.setIcon(R.drawable.baseline_favorite_white_24);
-                                    //Toast.makeText(this, "Favorite ;)", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                if(mFavoriteEntry!=null) {
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.FavoriteDAO().deleteFavorite(mFavoriteEntry);
                         }
-                    }
-                });
-
-
+                    });
+                } else {
+                    final FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getmStrTitle(), mMovie.getmStrPosterPath(), mMovie.getmStrId());
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.FavoriteDAO().insertFavorite(favoriteEntry);
+                        }
+                    });
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -267,6 +252,30 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void addLiveDataObserver() {
+
+        //LiveData will run by default outside of the mainThread
+        LiveData<List<FavoriteEntry>> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
+        favoriteEntries.observe(this, new Observer<List<FavoriteEntry>>() {
+            //onChanged runs on the main thread by default
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+
+                if(favoriteEntries!=null && favoriteEntries.size()>0) {
+                    mFavoriteEntry = favoriteEntries.get(0);
+                    if(mFavoriteMenu != null) {
+                        mFavoriteMenu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_white_24);
+                    }
+                } else {
+                    mFavoriteEntry = null;
+                    if(mFavoriteMenu != null) {
+                        mFavoriteMenu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_border_white_24);
+                    }
+                }
+            }
+        });
     }
 
 }
