@@ -258,8 +258,12 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         //LiveData will run by default outside of the mainThread
         LiveData<List<FavoriteEntry>> favoriteEntries = mDb.FavoriteDAO().searchTitle(mMovie.getmStrId());
+
         favoriteEntries.observe(this, new Observer<List<FavoriteEntry>>() {
-            //onChanged runs on the main thread by default
+
+            /**
+             * onChanged runs on the main thread by default
+             */
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
 

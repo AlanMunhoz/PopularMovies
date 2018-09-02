@@ -3,6 +3,8 @@ package com.devandroid.popularmovies;
 import android.app.LoaderManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -225,13 +227,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private void addLiveDataObserver() {
 
-        //LiveData will run by default outside of the mainThread
-        LiveData<List<FavoriteEntry>> favoriteEntries = mDb.FavoriteDAO().loadFavorites();
-        favoriteEntries.observe(this, new Observer<List<FavoriteEntry>>() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        /**
+         * onChanged runs on the main thread by default
+         */
+        viewModel.getFavoriteEntries().observe(this, new Observer<List<FavoriteEntry>>() {
+
             //onChanged runs on the main thread by default
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
 
+                Log.d("02092018", "onChanged DB");
                 favoriteListMovies = new ArrayList<>();
                 for(int i=0;i<favoriteEntries.size();i++) {
                     favoriteListMovies.add(new ListItem(
