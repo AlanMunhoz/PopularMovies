@@ -7,8 +7,8 @@
     <color name="colorAccent">#FF4081</color>
 
     <array name="clBackground"><item>#2D5073</item><item>#040721</item></array>
-    <color name="clMiddleColor">#80000000</color>
-    <color name="clLightTextColor">#FFFFFF</color>
+    <color name="clMiddleColor">#80505050</color>
+    <color name="clLightTextColor">#ffffff</color>
     <color name="clDarkTextColor">#000000</color>
 
 

@@ -1,15 +1,14 @@
 package com.devandroid.popularmovies;
 
 import android.app.LoaderManager;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,7 +24,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.devandroid.popularmovies.Model.MoviesRequest;
-import com.devandroid.popularmovies.Utils.AppExecutors;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.Utils.NetworkLoader;
@@ -56,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     MoviesRequest moviesRequest;
     ArrayList<ListItem> listMovies;
     ArrayList<ListItem> favoriteListMovies;
+    List<FavoriteEntry> mFavoriteEntries;
     private String mSearchUrl;
 
     @Override
@@ -89,8 +88,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } else {
             mSearchUrl = Network.MOST_POPULAR_SEARCH;
         }
-        networkRequest(mSearchUrl);
-
+        setTitleActionBar(mSearchUrl);
+        if(mSearchUrl.isEmpty()) {
+            showFavoriteList();
+        } else {
+            networkRequest(mSearchUrl);
+        }
         addLiveDataObserver();
     }
 
@@ -114,14 +117,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             case R.id.most_popular:
                 networkRequest(Network.MOST_POPULAR_SEARCH);
+                setTitleActionBar(Network.MOST_POPULAR_SEARCH);
                 return true;
 
             case R.id.top_rated:
                 networkRequest(Network.TOP_RATED_SEARCH);
+                setTitleActionBar(Network.TOP_RATED_SEARCH);
                 return true;
 
             case R.id.favorite:
-                mAdapter.setListAdapter(favoriteListMovies);
+                setTitleActionBar("");
+                showFavoriteList();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -133,7 +139,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Context context = MainActivity.this;
         Class destinyActivity = DetailsActivity.class;
         Intent intent = new Intent(context, destinyActivity);
-        intent.putExtra(BUNDLE_DETAILS_EXTRA, moviesRequest.getItem(clickedItemIndex));
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar!=null && actionBar.getTitle().equals(getString(R.string.favorite_title))) {
+            intent.putExtra(BUNDLE_DETAILS_EXTRA, mFavoriteEntries.get(clickedItemIndex).getMovie());
+        } else {
+            intent.putExtra(BUNDLE_DETAILS_EXTRA, moviesRequest.getItem(clickedItemIndex));
+        }
         startActivity(intent);
     }
 
@@ -222,6 +234,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    private void showFavoriteList() {
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar!=null && actionBar.getTitle().equals(getString(R.string.favorite_title))) {
+            mSearchUrl = "";
+            mAdapter.setListAdapter(favoriteListMovies);
+        }
+    }
+
     /**
      * Adding observer to database, this way allow us to know when database changes occurs.
      */
@@ -239,13 +260,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
 
                 Log.d(MainViewModel.LOG_TAG, "onChanged DB");
+                mFavoriteEntries = favoriteEntries;
                 favoriteListMovies = new ArrayList<>();
                 for(int i=0;i<favoriteEntries.size();i++) {
                     favoriteListMovies.add(new ListItem(
                             favoriteEntries.get(i).getTitle(),
                             Network.IMAGE_URL + Network.IMAGE_POSTER_SIZE_185PX + favoriteEntries.get(i).getPosterPath()));
                 }
+                showFavoriteList();
             }
         });
+    }
+
+    private void setTitleActionBar(String searchUrl) {
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if(actionBar != null) {
+            switch (searchUrl) {
+
+                case Network.MOST_POPULAR_SEARCH:
+                    actionBar.setTitle(getString(R.string.most_popular_title));
+                    break;
+
+                case Network.TOP_RATED_SEARCH:
+                    actionBar.setTitle(getString(R.string.top_rated_title));
+                    break;
+
+                case "":
+                    actionBar.setTitle(getString(R.string.favorite_title));
+                    break;
+            }
+        }
     }
 }

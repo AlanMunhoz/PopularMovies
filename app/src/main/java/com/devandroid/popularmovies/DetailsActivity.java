@@ -1,10 +1,9 @@
 package com.devandroid.popularmovies;
 
+import android.app.Activity;
 import android.app.LoaderManager;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.net.Uri;
@@ -69,6 +68,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         ActionBar actionBar = getSupportActionBar();
         if(actionBar!=null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.movie_details);
         }
 
         ivPosterPath = findViewById(R.id.ivPosterPath);
@@ -148,7 +148,17 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                         }
                     });
                 } else {
-                    final FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getmStrTitle(), mMovie.getmStrPosterPath(), mMovie.getmStrId());
+                    final FavoriteEntry favoriteEntry =
+                            new FavoriteEntry(
+                                    mMovie.getmStrTitle(),
+                                    mMovie.getmStrPosterPath(),
+                                    mMovie.getmStrId(),
+                                    mMovie.getmStrVoteAverage(),
+                                    mMovie.getmStrReleaseDate(),
+                                    mMovie.getmStrVoteCount(),
+                                    mMovie.getmStrPopularity(),
+                                    mMovie.getmStrOverview()
+                            );
                     AppExecutors.getInstance().diskIO().execute(new Runnable() {
                         @Override
                         public void run() {
@@ -263,6 +273,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         DetailsViewModelFactory factory = new DetailsViewModelFactory(mDb, mMovie.getmStrId());
         final DetailsViewModel viewModel = ViewModelProviders.of(this, factory).get(DetailsViewModel.class);
+        final Activity appContext = this;
 
         viewModel.getFavoriteEntry().observe(this, new Observer<List<FavoriteEntry>>() {
 
@@ -277,11 +288,13 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                     mFavoriteEntry = favoriteEntries.get(0);
                     if(mFavoriteMenu != null) {
                         mFavoriteMenu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_white_24);
+                        Toast.makeText(appContext, getString(R.string.favorite_selection_on), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     mFavoriteEntry = null;
                     if(mFavoriteMenu != null) {
                         mFavoriteMenu.findItem(R.id.favorite).setIcon(R.drawable.baseline_favorite_border_white_24);
+                        Toast.makeText(appContext, getString(R.string.favorite_selection_off), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
