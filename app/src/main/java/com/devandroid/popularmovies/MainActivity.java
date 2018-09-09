@@ -1,6 +1,7 @@
 package com.devandroid.popularmovies;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -28,10 +29,12 @@ import android.widget.TextView;
 
 import com.devandroid.popularmovies.Model.MoviesRequest;
 import com.devandroid.popularmovies.Utils.JSON;
+import com.devandroid.popularmovies.Utils.MyAsyncTaskLoader;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.database.FavoriteEntry;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,10 +69,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Data
      */
     private ListAdapter mAdapter;
-    MoviesRequest mMoviesRequest;
-    ArrayList<ListItem> mLstMovieItems;
-    ArrayList<ListItem> mLstFavoriteMovieItems;
-    List<FavoriteEntry> mLstFavoriteEntries;
+    private MoviesRequest mMoviesRequest;
+    private ArrayList<ListItem> mLstMovieItems;
+    private ArrayList<ListItem> mLstFavoriteMovieItems;
+    private List<FavoriteEntry> mLstFavoriteEntries;
     private int mLastSelection;
 
     @Override
@@ -77,14 +80,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Network.setApiKey(this.getResources().getString(R.string.TheMovieDB_ApiKey));
-
-
         mFlParentView = findViewById(R.id.flParentView);
         mRvListMovies = findViewById(R.id.rv_list_movies);
         mPbProgressbar = findViewById(R.id.pbProgressbar);
         mTvNoConnection = findViewById(R.id.tvNoConnection);
 
+        Network.setApiKey(this.getResources().getString(R.string.TheMovieDB_ApiKey));
 
         mFlParentView.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, getResources().getIntArray(R.array.clBackground)));
 
@@ -105,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if(mLastSelection == FAVORITES) {
             showFavoriteList();
-            Log.d("09092018", "favoritos");
         } else {
             if(mMoviesRequest != null) {
                 showMovieList();
@@ -216,6 +216,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
+    private void setTitleActionBar() {
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if(actionBar != null) {
+
+            switch (mLastSelection) {
+
+                case MOST_POPULAR:
+                    actionBar.setTitle(getString(R.string.most_popular_title));
+                    break;
+
+                case TOP_RATED:
+                    actionBar.setTitle(getString(R.string.top_rated_title));
+                    break;
+
+                case FAVORITES:
+                    actionBar.setTitle(getString(R.string.favorite_title));
+                    break;
+
+                default:
+                    actionBar.setTitle(getString(R.string.most_popular_title));
+                    break;
+            }
+        }
+    }
+
     private void showMovieList() {
 
         mLstMovieItems = new ArrayList<>();
@@ -262,71 +289,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         });
     }
 
-    private void setTitleActionBar() {
-
-        ActionBar actionBar = getSupportActionBar();
-
-        if(actionBar != null) {
-
-            switch (mLastSelection) {
-
-                case MOST_POPULAR:
-                    actionBar.setTitle(getString(R.string.most_popular_title));
-                    break;
-
-                case TOP_RATED:
-                    actionBar.setTitle(getString(R.string.top_rated_title));
-                    break;
-
-                case FAVORITES:
-                    actionBar.setTitle(getString(R.string.favorite_title));
-                    break;
-
-                default:
-                    actionBar.setTitle(getString(R.string.most_popular_title));
-                    break;
-            }
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
     @NonNull
     @Override
     public Loader<String> onCreateLoader(int id, @Nullable final Bundle args) {
 
-        return new AsyncTaskLoader<String>(this) {
+        /**
+         * Show indicator of loading data
+         */
+        mPbProgressbar.setVisibility(View.VISIBLE);
 
-            @Override
-            protected void onStartLoading() {
-
-                if (args == null) {
-                    return;
-                }
-
-                /**
-                 * Show indicator of loading data
-                 */
-                mPbProgressbar.setVisibility(View.VISIBLE);
-
-                forceLoad();
-            }
-
-            @Override
-            public String loadInBackground() {
-
-                String SearchResults = null;
-                URL searchQueryUrlString = Network.buildUrl(args.getString(SEARCH_QUERY_URL_EXTRA));
-
-                try {
-                    Log.d(LOG_TAG, "loadInBackground");
-                    SearchResults = Network.getResponseFromHttpUrl(searchQueryUrlString);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return SearchResults;
-            }
-        };
+        return new MyAsyncTaskLoader(new WeakReference<Activity>(this), args, SEARCH_QUERY_URL_EXTRA);
     }
 
     @Override

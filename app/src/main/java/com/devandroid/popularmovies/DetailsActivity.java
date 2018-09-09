@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
@@ -28,12 +29,14 @@ import com.devandroid.popularmovies.Model.ReviewsRequest;
 import com.devandroid.popularmovies.Model.Video;
 import com.devandroid.popularmovies.Utils.AppExecutors;
 import com.devandroid.popularmovies.Utils.JSON;
+import com.devandroid.popularmovies.Utils.MyAsyncTaskLoader;
 import com.devandroid.popularmovies.Utils.Network;
 import com.devandroid.popularmovies.database.AppDatabase;
 import com.devandroid.popularmovies.database.FavoriteEntry;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +44,16 @@ import java.util.List;
 
 public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>, VideoAdapter.ListItemClickListener {
 
+    /**
+     * Constants
+     */
     private static final String SEARCH_QUERY_URL_EXTRA = "SearchUrl";
     private static final int DETAILS_ACTIVITY_LOADER = 2;
     private static final String LOG_TAG = DetailsActivity.class.getSimpleName();
 
+    /**
+     * UI components
+     */
     private ImageView ivPosterPath;
     private TextView tvTitle;
     private TextView tvVoteAverage;
@@ -55,6 +64,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private TextView tvReviews;
     private RecyclerView mRvVideos;
 
+    /**
+     * Data
+     */
     private VideoAdapter mAdapter;
     private Movie mMovie;
     private ArrayList<Video> mLstVideos;
@@ -277,40 +289,13 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         });
     }
 
-    @SuppressLint("StaticFieldLeak")
     @NonNull
     @Override
     public Loader<String> onCreateLoader(int id, @Nullable final Bundle args) {
 
-        return new AsyncTaskLoader<String>(this) {
+        mSearchUrl = args.getString(SEARCH_QUERY_URL_EXTRA);
 
-            @Override
-            protected void onStartLoading() {
-
-                if (args == null) {
-                    return;
-                }
-
-                forceLoad();
-            }
-
-            @Override
-            public String loadInBackground() {
-
-                String SearchResults = null;
-                mSearchUrl = args.getString(SEARCH_QUERY_URL_EXTRA);
-                URL searchQueryUrlString = Network.buildUrl(mSearchUrl);
-
-                try {
-                    Log.d(LOG_TAG, "loadInBackground");
-                    SearchResults = Network.getResponseFromHttpUrl(searchQueryUrlString);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return SearchResults;
-            }
-        };
+        return new MyAsyncTaskLoader(new WeakReference<Activity>(this), args, SEARCH_QUERY_URL_EXTRA);
     }
 
     @Override
