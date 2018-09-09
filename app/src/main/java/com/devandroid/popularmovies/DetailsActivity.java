@@ -1,11 +1,14 @@
 package com.devandroid.popularmovies;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.Loader;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -26,11 +29,12 @@ import com.devandroid.popularmovies.Model.Video;
 import com.devandroid.popularmovies.Utils.AppExecutors;
 import com.devandroid.popularmovies.Utils.JSON;
 import com.devandroid.popularmovies.Utils.Network;
-import com.devandroid.popularmovies.Utils.NetworkLoader;
 import com.devandroid.popularmovies.database.AppDatabase;
 import com.devandroid.popularmovies.database.FavoriteEntry;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +120,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         }
 
         addLiveDataObserver();
+
+        getSupportLoaderManager().initLoader(DETAILS_ACTIVITY_LOADER, null, this);
     }
 
     @Override
@@ -182,47 +188,17 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         }
     }
 
-    @Override
-    public Loader<String> onCreateLoader(int i, Bundle bundle) {
-
-        String searchUrl = bundle.getString(SEARCH_QUERY_URL_EXTRA);
-        NetworkLoader loader = new NetworkLoader(this, Network.buildUrl(searchUrl));
-        return loader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<String> loader, String movieResults) {
-
-        if(movieResults!=null) {
-
-            Log.d(LOG_TAG, movieResults);
-
-            if(mSearchUrl.equals(Network.REVIEWS_URL(mMovie.getmStrId()))) {
-                showReviewsList(movieResults);
-                networkRequest(Network.VIDEOS_URL(mMovie.getmStrId()));
-            } else {
-                showVideosList(movieResults);
-            }
-        } else {
-            Log.d(LOG_TAG, "Load data errors");
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<String> loader) {
-    }
-
     private void networkRequest(String search) {
 
-        mSearchUrl = search;
         Bundle bundle = new Bundle();
-        bundle.putString(SEARCH_QUERY_URL_EXTRA, mSearchUrl);
+        bundle.putString(SEARCH_QUERY_URL_EXTRA, search);
 
-        NetworkLoader loader = (NetworkLoader) getLoaderManager().getLoader(DETAILS_ACTIVITY_LOADER);
-        if(loader!=null && loader.isAlreadyCreated()) {
-            getLoaderManager().restartLoader(DETAILS_ACTIVITY_LOADER, bundle, this).forceLoad();
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<String> githubSearchLoader = loaderManager.getLoader(DETAILS_ACTIVITY_LOADER);
+        if (githubSearchLoader == null) {
+            loaderManager.initLoader(DETAILS_ACTIVITY_LOADER, bundle, this);
         } else {
-            getLoaderManager().initLoader(DETAILS_ACTIVITY_LOADER, bundle, this).forceLoad();
+            loaderManager.restartLoader(DETAILS_ACTIVITY_LOADER, bundle, this);
         }
     }
 
@@ -301,4 +277,62 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
+    @NonNull
+    @Override
+    public Loader<String> onCreateLoader(int id, @Nullable final Bundle args) {
+
+        return new AsyncTaskLoader<String>(this) {
+
+            @Override
+            protected void onStartLoading() {
+
+                if (args == null) {
+                    return;
+                }
+
+                forceLoad();
+            }
+
+            @Override
+            public String loadInBackground() {
+
+                String SearchResults = null;
+                mSearchUrl = args.getString(SEARCH_QUERY_URL_EXTRA);
+                URL searchQueryUrlString = Network.buildUrl(mSearchUrl);
+
+                try {
+                    Log.d(LOG_TAG, "loadInBackground");
+                    SearchResults = Network.getResponseFromHttpUrl(searchQueryUrlString);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return SearchResults;
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<String> loader, String movieResults) {
+
+        if(movieResults!=null) {
+
+            Log.d(LOG_TAG, movieResults);
+
+            if(mSearchUrl.equals(Network.REVIEWS_URL(mMovie.getmStrId()))) {
+                showReviewsList(movieResults);
+                networkRequest(Network.VIDEOS_URL(mMovie.getmStrId()));
+            } else {
+                showVideosList(movieResults);
+            }
+        } else {
+            Log.d(LOG_TAG, "Load data errors");
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<String> loader) {
+
+    }
 }
