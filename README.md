@@ -2,9 +2,13 @@
 This is a simple app that presents to user a grid of movies.
 
 #### Built with
+- API The Movie DB
 - RecyclerView
 - java.net library (HttpURLConnection)
 - org.json library (JSON object)
+- AsyncTaskLoader and LoaderManager
+- Room, LiveData and ViewModel
+- Android Executors
 - Picasso
 
 #### Before running
